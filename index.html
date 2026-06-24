@@ -530,6 +530,9 @@
 </footer>
 
 <script>
+const SUPABASE_URL = 'https://zdxmiqirebefsmflaemn.supabase.co'
+const SUPABASE_ANON_KEY = 'sb_publishable_cOXpn7KKtV-Wcar72oZMEw_2ulkntgG'
+
 async function registrar(inputId, formId, successId) {
   const email = document.getElementById(inputId).value.trim()
   if (!email || !email.includes('@')) {
@@ -538,10 +541,27 @@ async function registrar(inputId, formId, successId) {
   }
   document.getElementById(inputId).style.borderColor = ''
 
-  // Aquí conectaremos con Supabase cuando esté listo
-  // Por ahora solo mostramos el mensaje de éxito
-  document.getElementById(formId).style.display = 'none'
-  document.getElementById(successId).style.display = 'block'
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/waitlist`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({ email })
+    })
+
+    if (res.ok || res.status === 409) {
+      document.getElementById(formId).style.display = 'none'
+      document.getElementById(successId).style.display = 'block'
+    } else {
+      alert('Hubo un error. Intenta de nuevo.')
+    }
+  } catch (e) {
+    alert('Hubo un error. Intenta de nuevo.')
+  }
 }
 </script>
 
